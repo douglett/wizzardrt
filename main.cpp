@@ -11,7 +11,7 @@ int main() {
 	
 	cl.functions.push_back({ "int", "test1" });
 	auto& fn1 = cl.functions.back();
-	fn1.body = {
+	fn1.block = {
 		Print{{ Val{"string", .s="hello world"} }}
 	};
 	
@@ -21,7 +21,7 @@ int main() {
 	fn.arguments.push_back({ "int", "b" });
 	fn.arguments.push_back({ "int", "depth" });
 
-	fn.body = {
+	fn.block = {
 		Print{{ Val{"string", .s="hello world"} }},
 		Expr(Val{ "int", 101 }),
 		Expr(Operator{ "+", { Val{"int", 1}, Val{"int", 2} } }),
@@ -43,7 +43,9 @@ int main() {
 
 	Show().all();
 	Validate().all();
+
+	printf("::Runtime begin::\n");
 	Runtime r;
 	r.init();
-	// r.call("TestClass", "test1");
+	r.call("TestClass", "test1");
 }

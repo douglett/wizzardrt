@@ -28,14 +28,14 @@ struct Show {
 		for (auto& dim : fn.arguments)
 			pdim(dim, ind+1);
 		printf("%s::Body:\n", indent(ind+1));
-		pblock(fn.body, ind+1);
+		pblock(fn.block, ind+1);
 	}
 
 	void pblock(const vector<Stmt>& bl, int ind) {
 		for (auto& st : bl)
 			if (st.print.size()) {
 				printf("%sprint:\n", indent(ind));
-				for (auto& ex : st.print[0].expr)
+				for (auto& ex : st.print[0].arguments)
 					pexpr(ex, ind+1);
 			}
 			else if (st.expr.size())
@@ -58,7 +58,7 @@ struct Show {
 			else if (val.type == "float")
 				printf("%s%f\n", indent(ind), val.f);
 			else if (val.type == "string")
-				printf("%s%s\n", indent(ind), val.s.c_str());
+				printf("%s'%s'\n", indent(ind), val.s.c_str());
 		}
 		else if (ex.var.size()) {
 			auto& var = ex.var[0];

@@ -3,13 +3,13 @@
 
 // === Run from AST ===
 struct Runtime {
-	// struct Instance { string name; map<string, int> membersi; map<string, string> memberss; };
-	// vector<Instance> staticclass;
+	struct Instance { string name; map<string, int> membersi; map<string, string> memberss; };
+	vector<Instance> staticinstance;
 
-	int init() {
+	void init() {
 		for (const auto& cl : wizclass) {
-			// staticclass.push_back({ cl.name });
-			// auto& self = staticclass.back();
+			staticinstance.push_back({ cl.name });
+			// auto& self = staticinstance.back();
 			// // set up members of static class
 			// if (self.isstatic)
 			// 	for (const auto& dim : cl.members) {
@@ -19,17 +19,43 @@ struct Runtime {
 			// 			self.memberss[dim.name] = "";
 			// 	}
 		}
-		printf("init OK!\n");
+		printf("::init OK!\n");
+	}
+
+	const WizClass& AstClass(const string& name) const {
+		for (const auto& cl : wizclass)
+			if (cl.name == name)
+				return cl;
+		throw out_of_range("missing class AST: " + name);
+	}
+	const Func& AstFunc(const string& classname, const string& funcname) const {
+		auto& cl = AstClass(classname);
+		for (auto& fn : cl.functions)
+			if (fn.name == funcname)
+				return fn;
+		throw out_of_range("missing function AST: " + classname + "::" + funcname);
+	}
+
+	int call(const string& classname, const string& funcname) {
+		printf("::Call: %s::%s\n", classname.c_str(), funcname.c_str());
+		auto& func = AstFunc(classname, funcname);
+		for (auto& stmt : func.block)
+			rstmt(stmt);
 		return 0;
 	}
 
-	// const WizClass getclassAST(const string& name) {
-	// 	for (const auto& cl : )
-	// }
+	void rstmt(const Stmt& st) {
+		if (st.print.size()) {
+			for (auto& ex : st.print[0].arguments)
+				cout << rexprs(ex) << " ";
+			cout << endl;
+		}
+	}
 
-	// int callstatic(const string& classname, const string& function) {
-	// 	// auto& cl = staticclass.at(classname);
-	// 	auto& ast = find(wizclass, )
-	// 	return 0;
-	// }
+	// --- run expressions ---
+	string rexprs(const Expr& ex) {
+		if (ex.val.size())
+			return ex.val[0].s;
+		throw runtime_error("rexprs");
+	}
 };

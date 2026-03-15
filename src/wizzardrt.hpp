@@ -20,7 +20,7 @@ struct Expr      {
 };
 // statements
 struct Dim;
-struct Print  { vector<Expr> expr; };
+struct Print  { vector<Expr> arguments; };
 struct Let    { string name; Expr expr; };
 struct Stmt   {
 	vector<Expr> expr; vector<Print> print; vector<Dim> dim; vector<Let> let;
@@ -31,7 +31,7 @@ struct Stmt   {
 };
 // class members
 struct  Dim      { string type, name; };
-struct  Func     { string type, name; vector<Dim> arguments; vector<Stmt> body; };
+struct  Func     { string type, name; vector<Dim> arguments; vector<Stmt> block; };
 struct  WizClass { string name; bool isstatic; vector<Dim> members; vector<Func> functions; };
 // classes list
 vector<WizClass>  wizclass;
