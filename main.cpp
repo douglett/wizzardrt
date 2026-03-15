@@ -7,16 +7,17 @@ using namespace std;
 // expressions
 struct Expr;
 struct Val       { string type; int i; double f; string s; };
-struct Var       { string name; };
+struct Var       { string name; bool global; };
 struct Operator  { string op; vector<Expr> lr; };
 struct Expr      {
-	vector<Val> val; vector<Operator> op;
+	vector<Val> val; vector<Var> var; vector<Operator> op;
 	Expr(const Val& v)      { val.push_back(v); }
+	Expr(const Var& v)      { var.push_back(v); }
 	Expr(const Operator& o) { op.push_back(o); }
 };
 // statements
 struct Dim;
-struct Print  { string s; };
+struct Print  { vector<Expr> expr; };
 struct Let    { string name; Expr expr; };
 struct Stmt   {
 	vector<Expr> expr; vector<Print> print; vector<Dim> dim; vector<Let> let;
@@ -62,8 +63,11 @@ struct Show {
 
 	void pblock(const vector<Stmt>& bl, int ind) {
 		for (auto& st : bl)
-			if (st.print.size())
-				printf("%sprint '%s'\n", indent(ind), st.print[0].s.c_str());
+			if (st.print.size()) {
+				printf("%sprint:\n", indent(ind));
+				for (auto& ex : st.print[0].expr)
+					pexpr(ex, ind+1);
+			}
 			else if (st.expr.size())
 				printf("%sexpr:\n", indent(ind)),
 				pexpr(st.expr[0], ind+1);
@@ -85,6 +89,10 @@ struct Show {
 				printf("%s%f\n", indent(ind), val.f);
 			else if (val.type == "string")
 				printf("%s%s\n", indent(ind), val.s.c_str());
+		}
+		else if (ex.var.size()) {
+			auto& var = ex.var[0];
+			printf("%s%s: %s\n", indent(ind), var.global ? "Global" : "Local", var.name.c_str());
 		}
 		else if (ex.op.size()) {
 			auto& op = ex.op[0];
@@ -121,7 +129,7 @@ int main() {
 	fn.arguments.push_back({ "int", "depth" });
 
 	fn.body = {
-		Print{ "hello world" },
+		Print{{ Val{"string", .s="hello world"} }},
 		Expr(Val{ "int", 101 }),
 		Expr(Operator{ "+", { Val{"int", 1}, Val{"int", 2} } }),
 
@@ -137,7 +145,7 @@ int main() {
 			Val{"string", .s="world"}
 		}})},
 
-		Print{ "hello s" }
+		Print{{ Var{"hello"}, Var{"s"} }}
 	};
 
 	show.pall();
