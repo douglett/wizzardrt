@@ -1,0 +1,9 @@
+static class program;
+
+int main() {
+	print "hello world";
+	int a;
+	a = 1 + 2;
+	string s;
+	s = "hello " + "world";
+}
