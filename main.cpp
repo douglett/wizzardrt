@@ -4,12 +4,18 @@ using namespace std;
 int main() {
 	printf("hello world\n");
 
-	wizclass.push_back({ "TestClass" });
+	wizclass.push_back({ "TestClass", true });
 	auto& cl = wizclass.back();
 	cl.members.push_back({ "int", "a" });
 	cl.members.push_back({ "string", "b" });
-	cl.functions.push_back({ "int", "fib" });
-
+	
+	cl.functions.push_back({ "int", "test1" });
+	auto& fn1 = cl.functions.back();
+	fn1.body = {
+		Print{{ Val{"string", .s="hello world"} }}
+	};
+	
+	cl.functions.push_back({ "int", "test_lol" });
 	auto& fn = cl.functions.back();
 	fn.arguments.push_back({ "int", "a" });
 	fn.arguments.push_back({ "int", "b" });
@@ -35,5 +41,9 @@ int main() {
 		Print{{ Var{"hello"}, Var{"s"} }}
 	};
 
-	Show().pall();
+	Show().all();
+	Validate().all();
+	Runtime r;
+	r.init();
+	// r.call("TestClass", "test1");
 }

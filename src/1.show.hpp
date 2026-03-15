@@ -1,15 +1,17 @@
+#pragma once
 #include "wizzardrt.hpp"
 
+// === Show code structure ===
 struct Show {
 	// print everything
-	void pall() {
+	void all() {
 		for (const auto& cl : wizclass)
 			pclass(cl);
 	}
 
 	// print logical language constructs 
 	void pclass(const WizClass& cl) {
-		printf("Class: %s\n", cl.name.c_str());
+		printf("%sClass: %s\n", cl.isstatic ? "static " : "", cl.name.c_str());
 		for (auto& var : cl.members)
 			pdim(var, 1);
 		for (auto& fn : cl.functions)

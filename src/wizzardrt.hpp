@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 using namespace std;
 
 // === Runtime structures ===
@@ -31,9 +32,11 @@ struct Stmt   {
 // class members
 struct  Dim      { string type, name; };
 struct  Func     { string type, name; vector<Dim> arguments; vector<Stmt> body; };
-struct  WizClass { string name; vector<Dim> members; vector<Func> functions; };
+struct  WizClass { string name; bool isstatic; vector<Dim> members; vector<Func> functions; };
 // classes list
 vector<WizClass>  wizclass;
 
 // === Other includes ===
 #include "1.show.hpp"
+#include "2.validate.hpp"
+#include "3.runtime.hpp"
