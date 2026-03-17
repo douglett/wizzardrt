@@ -54,8 +54,8 @@ struct Runtime {
 
 	// --- run expressions ---
 	string rexprs(const Expr& ex) {
-		if (ex.val.size())
-			return ex.val[0].s;
+		if (holds_alternative<Val>(ex))
+			return get<string>(get<Val>(ex));
 		throw runtime_error("rexprs");
 	}
 };

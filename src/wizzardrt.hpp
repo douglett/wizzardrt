@@ -2,22 +2,19 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <variant>
 #include <memory>
 #include <map>
 using namespace std;
 
 // === Runtime structures ===
 // expressions
-struct Expr;
-struct Val       { string type; int i; double f; string s; };
+using  Val       = variant<int, double, string>;
+struct Var;
+struct Operator;
+using  Expr      = variant<Val, Var, Operator>;
 struct Var       { string name; bool global; };
 struct Operator  { string op; vector<Expr> lr; };
-struct Expr      {
-	vector<Val> val; vector<Var> var; vector<Operator> op;
-	Expr(const Val& v)      { val.push_back(v); }
-	Expr(const Var& v)      { var.push_back(v); }
-	Expr(const Operator& o) { op.push_back(o); }
-};
 // statements
 struct Dim;
 struct Print  { vector<Expr> arguments; };

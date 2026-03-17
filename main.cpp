@@ -1,6 +1,8 @@
 #include "src/wizzardrt.hpp"
 using namespace std;
 
+using Val2 = variant<int, double, string>;
+
 int main() {
 	printf("hello world\n");
 
@@ -12,7 +14,7 @@ int main() {
 	cl.functions.push_back({ "int", "test1" });
 	auto& fn1 = cl.functions.back();
 	fn1.block = {
-		Print{{ Val{"string", .s="hello world"} }}
+		Print{{ Val{"hello world"} }}
 	};
 	
 	cl.functions.push_back({ "int", "test_lol" });
@@ -22,20 +24,20 @@ int main() {
 	fn.arguments.push_back({ "int", "depth" });
 
 	fn.block = {
-		Print{{ Val{"string", .s="hello world"} }},
-		Expr(Val{ "int", 101 }),
-		Expr(Operator{ "+", { Val{"int", 1}, Val{"int", 2} } }),
+		Print{{ Val{"hello world"} }},
+		Expr(101),
+		Expr(Operator{ "+", { Val{1}, Val{2} } }),
 
 		Dim{ "int", "hello" },
 		Let{ "hello", Expr(Operator{"+", {
-			Val{"int", 1},
-			Val{"int", 1}
+			Val{1},
+			Val{1}
 		}})},
 		
 		Dim{ "string", "s" },
 		Let{ "s", Expr(Operator{"+", {
-			Val{"string", .s="hello "},
-			Val{"string", .s="world"}
+			Val{"hello "},
+			Val{"world"}
 		}})},
 
 		Print{{ Var{"hello"}, Var{"s"} }}

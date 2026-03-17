@@ -51,21 +51,21 @@ struct Show {
 	}
 
 	void pexpr(const Expr& ex, int ind) {
-		if (ex.val.size()) {
-			auto& val = ex.val[0];
-			if (val.type == "int")
-				printf("%s%d\n", indent(ind), val.i);
-			else if (val.type == "float")
-				printf("%s%f\n", indent(ind), val.f);
-			else if (val.type == "string")
-				printf("%s'%s'\n", indent(ind), val.s.c_str());
+		if (holds_alternative<Val>(ex)) {
+			auto& val = get<Val>(ex);
+			if (holds_alternative<int>(val))
+				printf("%s%d\n", indent(ind), get<int>(val));
+			else if (holds_alternative<double>(val))
+				printf("%s%f\n", indent(ind), get<double>(val));
+			else if (holds_alternative<string>(val))
+				printf("%s'%s'\n", indent(ind), get<string>(val).c_str());
 		}
-		else if (ex.var.size()) {
-			auto& var = ex.var[0];
+		else if (holds_alternative<Var>(ex)) {
+			auto& var = get<Var>(ex);
 			printf("%s%s: %s\n", indent(ind), var.global ? "Global" : "Local", var.name.c_str());
 		}
-		else if (ex.op.size()) {
-			auto& op = ex.op[0];
+		else if (holds_alternative<Operator>(ex)) {
+			auto& op = get<Operator>(ex);
 			printf("%s%s\n", indent(ind), op.op.c_str());
 			pexpr(op.lr.at(0), ind+1);
 			pexpr(op.lr.at(1), ind+1);
