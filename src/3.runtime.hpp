@@ -47,8 +47,8 @@ struct Runtime {
 	void rstmt(const Stmt& st) {
 		if (auto* pr = get_if<Print>(&st)) {
 			for (auto& ex : pr->arguments)
-				cout << rexprs(ex) << " ";
-			cout << endl;
+				printf("%s ", rexprs(ex).c_str());
+			printf("\n");
 		}
 		// throw runtime_error("rstmt");
 	}

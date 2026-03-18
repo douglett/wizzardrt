@@ -24,21 +24,15 @@ int main() {
 	fn.arguments.push_back({ "int", "depth" });
 
 	fn.block = {
-		Print{{ Val{"hello world"} }},
-		Expr(101),
-		Expr(Operator{ "+", { Val{1}, Val{2} } }),
+		Print{{ "hello world" }},
+		101,
+		Operator{"+", { 2, 2 }},
 
 		Dim{ "int", "hello" },
-		Let{ "hello", Expr(Operator{"+", {
-			Val{1},
-			Val{1}
-		}})},
+		Let{ "hello", Operator{"+", {1, 1}} },
 		
 		Dim{ "string", "s" },
-		Let{ "s", Expr(Operator{"+", {
-			Val{"hello "},
-			Val{"world"}
-		}})},
+		Let{ "s", Operator{"+", {"hello ", "world"}} },
 
 		Print{{ Var{"hello"}, Var{"s"} }}
 	};
