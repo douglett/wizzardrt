@@ -9,27 +9,21 @@ using namespace std;
 
 // === Runtime structures ===
 // expressions
-using  Val       = variant<int, double, string>;
+using  Val        = variant<int, double, string>;
 struct Var;
 struct Operator;
-using  Expr      = variant<Val, Var, Operator>;
-struct Var       { string name; bool global; };
-struct Operator  { string op; vector<Expr> lr; };
+using  Expr       = variant<Val, Var, Operator>;
+struct Var        { string name; bool global; };
+struct Operator   { string op; vector<Expr> lr; };
 // statements
 struct Dim;
-struct Print  { vector<Expr> arguments; };
-struct Let    { string name; Expr expr; };
-struct Stmt   {
-	vector<Expr> expr; vector<Print> print; vector<Dim> dim; vector<Let> let;
-	Stmt(const Expr& ex)  { expr.push_back(ex); }
-	Stmt(const Print& pr) { print.push_back(pr); }
-	Stmt(const Dim& d)    { dim.push_back(d); }
-	Stmt(const Let& l)    { let.push_back(l); }
-};
+struct Print      { vector<Expr> arguments; };
+struct Let        { string name; Expr expr; };
+using  Stmt       = variant<Expr, Print, Dim, Let>;
 // class members
-struct  Dim      { string type, name; };
-struct  Func     { string type, name; vector<Dim> arguments; vector<Stmt> block; };
-struct  WizClass { string name; bool isstatic; vector<Dim> members; vector<Func> functions; };
+struct  Dim       { string type, name; };
+struct  Func      { string type, name; vector<Dim> arguments; vector<Stmt> block; };
+struct  WizClass  { string name; bool isstatic; vector<Dim> members; vector<Func> functions; };
 // classes list
 vector<WizClass>  wizclass;
 

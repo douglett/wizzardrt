@@ -45,11 +45,12 @@ struct Runtime {
 	}
 
 	void rstmt(const Stmt& st) {
-		if (st.print.size()) {
-			for (auto& ex : st.print[0].arguments)
+		if (auto* pr = get_if<Print>(&st)) {
+			for (auto& ex : pr->arguments)
 				cout << rexprs(ex) << " ";
 			cout << endl;
 		}
+		// throw runtime_error("rstmt");
 	}
 
 	// --- run expressions ---

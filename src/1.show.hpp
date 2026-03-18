@@ -28,26 +28,26 @@ struct Show {
 		for (auto& dim : fn.arguments)
 			pdim(dim, ind+1);
 		printf("%s::Body:\n", indent(ind+1));
-		pblock(fn.block, ind+1);
+		for (auto& st : fn.block)
+			pstmt(st, ind+1);
 	}
 
-	void pblock(const vector<Stmt>& bl, int ind) {
-		for (auto& st : bl)
-			if (st.print.size()) {
-				printf("%sprint:\n", indent(ind));
-				for (auto& ex : st.print[0].arguments)
-					pexpr(ex, ind+1);
-			}
-			else if (st.expr.size())
-				printf("%sexpr:\n", indent(ind)),
-				pexpr(st.expr[0], ind+1);
-			else if (st.dim.size())
-				pdim(st.dim[0], ind);
-			else if (st.let.size())
-				printf("%slet %s =\n", indent(ind), st.let[0].name.c_str()),
-				pexpr(st.let[0].expr, ind+1);
-			else
-				printf("%s(blank)\n", indent(ind));
+	void pstmt(const Stmt& st, int ind) {
+		if (auto* pr = get_if<Print>(&st)) {
+			printf("%sprint:\n", indent(ind));
+			for (auto& ex : pr->arguments)
+				pexpr(ex, ind+1);
+		}
+		else if (auto* ex = get_if<Expr>(&st))
+			printf("%sexpr:\n", indent(ind)),
+			pexpr(*ex, ind+1);
+		else if (auto* dim = get_if<Dim>(&st))
+			pdim(*dim, ind);
+		else if (auto* let = get_if<Let>(&st))
+			printf("%slet %s =\n", indent(ind), let->name.c_str()),
+			pexpr(let->expr, ind+1);
+		else
+			printf("%s(blank)\n", indent(ind));
 	}
 
 	void pexpr(const Expr& ex, int ind) {
