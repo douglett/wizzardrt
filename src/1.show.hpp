@@ -51,24 +51,21 @@ struct Show {
 	}
 
 	void pexpr(const Expr& ex, int ind) {
-		if (holds_alternative<Val>(ex)) {
-			auto& val = get<Val>(ex);
-			if (holds_alternative<int>(val))
-				printf("%s%d\n", indent(ind), get<int>(val));
-			else if (holds_alternative<double>(val))
-				printf("%s%f\n", indent(ind), get<double>(val));
-			else if (holds_alternative<string>(val))
-				printf("%s'%s'\n", indent(ind), get<string>(val).c_str());
+		if (auto* val = get_if<Val>(&ex)) {
+			if (auto* i = get_if<int>(val))
+				printf("%s%d\n", indent(ind), *i);
+			else if (auto* d = get_if<double>(val))
+				printf("%s%f\n", indent(ind), *d);
+			else if (auto* s = get_if<string>(val))
+				printf("%s'%s'\n", indent(ind), s->c_str());
 		}
-		else if (holds_alternative<Var>(ex)) {
-			auto& var = get<Var>(ex);
-			printf("%s%s: %s\n", indent(ind), var.global ? "Global" : "Local", var.name.c_str());
+		else if (auto* var = get_if<Var>(&ex)) {
+			printf("%s%s: %s\n", indent(ind), var->global ? "Global" : "Local", var->name.c_str());
 		}
-		else if (holds_alternative<Operator>(ex)) {
-			auto& op = get<Operator>(ex);
-			printf("%s%s\n", indent(ind), op.op.c_str());
-			pexpr(op.lr.at(0), ind+1);
-			pexpr(op.lr.at(1), ind+1);
+		else if (auto* op = get_if<Operator>(&ex)) {
+			printf("%s%s\n", indent(ind), op->op.c_str());
+			pexpr(op->lr.at(0), ind+1);
+			pexpr(op->lr.at(1), ind+1);
 		}
 		else {
 			printf("%s(blank)\n", indent(ind));
