@@ -10,10 +10,10 @@ using namespace std;
 // === Runtime structures ===
 // expressions
 using  Val        = variant<int, double, string>;
-struct Var;
+struct Variable;
 struct Operator;
-using  Expr       = variant<Val, Var, Operator>;
-struct Var        { string name; bool global; };
+using  Expr       = variant<Val, Variable, Operator>;
+struct Variable   { string name; bool global; };
 struct Operator   { string op; vector<Expr> lr; };
 // statements
 struct Dim;

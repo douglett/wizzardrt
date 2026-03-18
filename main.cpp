@@ -6,11 +6,13 @@ using Val2 = variant<int, double, string>;
 int main() {
 	printf("hello world\n");
 
+	// test class
 	wizclass.push_back({ "TestClass", true });
 	auto& cl = wizclass.back();
 	cl.members.push_back({ "int", "a" });
 	cl.members.push_back({ "string", "b" });
 	
+	// simple print function
 	cl.functions.push_back({ "int", "test1" });
 	auto& fn1 = cl.functions.back();
 	fn1.block = {
@@ -34,7 +36,7 @@ int main() {
 		Dim{ "string", "s" },
 		Let{ "s", Operator{"+", {"hello ", "world"}} },
 
-		Print{{ Var{"hello"}, Var{"s"} }}
+		Print{{ Variable{"hello"}, Variable{"s"} }}
 	};
 
 	Show().all();

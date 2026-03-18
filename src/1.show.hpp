@@ -59,7 +59,7 @@ struct Show {
 			else if (auto* s = get_if<string>(val))
 				printf("%s'%s'\n", indent(ind), s->c_str());
 		}
-		else if (auto* var = get_if<Var>(&ex)) {
+		else if (auto* var = get_if<Variable>(&ex)) {
 			printf("%s%s: %s\n", indent(ind), var->global ? "Global" : "Local", var->name.c_str());
 		}
 		else if (auto* op = get_if<Operator>(&ex)) {

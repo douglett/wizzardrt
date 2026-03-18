@@ -50,7 +50,8 @@ struct Runtime {
 				printf("%s ", rexprs(ex).c_str());
 			printf("\n");
 		}
-		// throw runtime_error("rstmt");
+		else
+			throw runtime_error("rstmt");
 	}
 
 	// --- run expressions ---
@@ -59,5 +60,9 @@ struct Runtime {
 			if (auto* s = get_if<string>(val))
 				return *s;
 		throw runtime_error("rexprs");
+	}
+
+	Val rexpr(const Expr& ex) {
+		return 0;
 	}
 };
