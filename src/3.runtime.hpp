@@ -64,8 +64,11 @@ struct Runtime {
 
 	void rstmt(const Stmt& st) {
 		// Expr
+		if (auto* ex = get_if<Expr>(&st)) {
+			return rexpr(*ex), void();
+		}
 		// Print
-		if (auto* pr = get_if<Print>(&st)) {
+		else if (auto* pr = get_if<Print>(&st)) {
 			for (auto& ex : pr->arguments) {
 				auto val = rexpr(ex);
 				printf("%s ", tostring(val).c_str());
@@ -74,8 +77,11 @@ struct Runtime {
 		}
 		// Dim
 		else if (auto* dim = get_if<Dim>(&st)) {
+			auto& local = frametop().dims[dim->name];
 			if (dim->type == "int")
-				return frametop().dims[dim->name] = 0, void();
+				return local = 0, void();
+			else if (dim->type == "string")
+				return local = "", void();
 		}
 		// Let
 		else if (auto* let = get_if<Let>(&st)) {
@@ -83,7 +89,7 @@ struct Runtime {
 			let->global ? setglobal(let->name, val) : setlocal(let->name, val);
 			return;
 		}
-		throw runtime_error("rstmt");
+		throw runtime_error("rstmt: " + to_string(st.index()));
 	}
 
 	// --- run expressions ---
@@ -99,7 +105,8 @@ struct Runtime {
 		else if (auto* op = get_if<Operator>(&ex)) {
 			auto l = rexpr(op->lr.at(0));
 			auto r = rexpr(op->lr.at(1));
-			if (op->op == "+")  return get<int>(l) + get<int>(r);
+			if      (op->op == "+i")  return get<int>(l) + get<int>(r);
+			else if (op->op == "+s")  return get<string>(l) + get<string>(r);
 		}
 		throw runtime_error("rexpr: error in type " + to_string(ex.index()));
 	}

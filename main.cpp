@@ -24,7 +24,7 @@ int main() {
 	auto& fn2 = cl.functions.back();
 	fn2.block = {
 		Print{{ 123 }},
-		Print{{ Operator{"+", {10, 4}} }}
+		Print{{ Operator{"+i", {10, 4}} }}
 	};
 
 	// local variables
@@ -46,15 +46,15 @@ int main() {
 	fn.block = {
 		Print{{ "hello world" }},
 		101,
-		Operator{"+", { 2, 2 }},
+		Operator{"+i", { 2, 2 }},
 
 		Dim{ "int", "hello" },
-		Let{ "hello", Operator{"+", {1, 1}} },
+		Let{ "hello", Operator{"+i", {1, 1}} },
 		
 		Dim{ "string", "s" },
-		Let{ "s", Operator{"+", {"hello ", "world"}} },
+		Let{ "s", Operator{"+s", {"hello ", "world"}} },
 
-		Print{{ Variable{"hello"}, Variable{"s"} }}
+		// Print{{ Variable{"hello"}, Variable{"s"} }}
 	};
 
 	Show().all();
@@ -66,4 +66,5 @@ int main() {
 	r.call("TestClass", "test1_hello");
 	r.call("TestClass", "test2_int");
 	r.call("TestClass", "test3_locals");
+	r.call("TestClass", "test_lol");
 }
