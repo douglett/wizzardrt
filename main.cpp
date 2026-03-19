@@ -13,12 +13,30 @@ int main() {
 	cl.members.push_back({ "string", "b" });
 	
 	// simple print function
-	cl.functions.push_back({ "int", "test1" });
+	cl.functions.push_back({ "int", "test1_hello" });
 	auto& fn1 = cl.functions.back();
 	fn1.block = {
-		Print{{ Val{"hello world"} }}
+		Print{{ "hello world" }}
+	};
+
+	// integers
+	cl.functions.push_back({ "int", "test2_int" });
+	auto& fn2 = cl.functions.back();
+	fn2.block = {
+		Print{{ 123 }},
+		Print{{ Operator{"+", {10, 4}} }}
+	};
+
+	// local variables
+	cl.functions.push_back({ "int", "test3_locals" });
+	auto& fn3 = cl.functions.back();
+	fn3.block = {
+		Dim{"int", "hello"},
+		Let{"hello", 123},
+		Print{{ "hello", Variable{"hello"} }}
 	};
 	
+	// test
 	cl.functions.push_back({ "int", "test_lol" });
 	auto& fn = cl.functions.back();
 	fn.arguments.push_back({ "int", "a" });
@@ -45,5 +63,7 @@ int main() {
 	printf("::Runtime begin::\n");
 	Runtime r;
 	r.init();
-	r.call("TestClass", "test1");
+	r.call("TestClass", "test1_hello");
+	r.call("TestClass", "test2_int");
+	r.call("TestClass", "test3_locals");
 }

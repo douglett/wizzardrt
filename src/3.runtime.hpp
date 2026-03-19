@@ -3,8 +3,11 @@
 
 // === Run from AST ===
 struct Runtime {
-	struct Instance { string name; map<string, int> membersi; map<string, string> memberss; };
+	struct Instance  { string name; map<string, Val> members; };
+	struct Frame     { map<string, Val> dims; };
 	vector<Instance> staticinstance;
+	Frame globals;
+	vector<Frame> stackframe;
 
 	void init() {
 		for (const auto& cl : wizclass) {
@@ -21,6 +24,19 @@ struct Runtime {
 		}
 		printf("::init OK!\n");
 	}
+
+	// === Memory ===
+
+	Frame& frametop() {
+		if (stackframe.size()) return stackframe.back();
+		throw out_of_range("frametop");
+	}
+	Val& setlocal(string name, Val& val) { auto& dim = frametop().dims[name]; dim = val; return dim; }
+	Val& getlocal(string name) { return frametop().dims.at(name); }
+	Val& setglobal(string name, Val& val) { auto& dim = globals.dims[name]; dim = val; return dim; }
+	Val& getglobal(string name) { return globals.dims.at(name); }
+
+	// === Run AST ===
 
 	const WizClass& AstClass(const string& name) const {
 		for (const auto& cl : wizclass)
@@ -39,30 +55,62 @@ struct Runtime {
 	int call(const string& classname, const string& funcname) {
 		printf("::Call: %s::%s\n", classname.c_str(), funcname.c_str());
 		auto& func = AstFunc(classname, funcname);
+		stackframe.push_back({});
 		for (auto& stmt : func.block)
 			rstmt(stmt);
+		stackframe.pop_back();
 		return 0;
 	}
 
 	void rstmt(const Stmt& st) {
+		// Expr
+		// Print
 		if (auto* pr = get_if<Print>(&st)) {
-			for (auto& ex : pr->arguments)
-				printf("%s ", rexprs(ex).c_str());
-			printf("\n");
+			for (auto& ex : pr->arguments) {
+				auto val = rexpr(ex);
+				printf("%s ", tostring(val).c_str());
+			}
+			return printf("\n"), void();
 		}
-		else
-			throw runtime_error("rstmt");
+		// Dim
+		else if (auto* dim = get_if<Dim>(&st)) {
+			if (dim->type == "int")
+				return frametop().dims[dim->name] = 0, void();
+		}
+		// Let
+		else if (auto* let = get_if<Let>(&st)) {
+			auto val = rexpr(let->expr);
+			let->global ? setglobal(let->name, val) : setlocal(let->name, val);
+			return;
+		}
+		throw runtime_error("rstmt");
 	}
 
 	// --- run expressions ---
-	string rexprs(const Expr& ex) {
+	Val rexpr(const Expr& ex) {
+		// Value
 		if (auto* val = get_if<Val>(&ex))
-			if (auto* s = get_if<string>(val))
-				return *s;
-		throw runtime_error("rexprs");
+			return *val;
+		// Variable (get)
+		else if (auto* var = get_if<Variable>(&ex)) {
+			return var->global ? getglobal(var->name) : getlocal(var->name);
+		}
+		// Operator (a + b)
+		else if (auto* op = get_if<Operator>(&ex)) {
+			auto l = rexpr(op->lr.at(0));
+			auto r = rexpr(op->lr.at(1));
+			if (op->op == "+")  return get<int>(l) + get<int>(r);
+		}
+		throw runtime_error("rexpr: error in type " + to_string(ex.index()));
 	}
 
-	Val rexpr(const Expr& ex) {
-		return 0;
+	string tostring(const Val& val) {
+		if (auto* s = get_if<string>(&val))
+			return *s;
+		else if (auto* i = get_if<int>(&val))
+			return to_string(*i);
+		else if (auto* d = get_if<double>(&val))
+			return to_string(*d);
+		throw runtime_error("tostring");
 	}
 };

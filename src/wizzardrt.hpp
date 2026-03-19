@@ -18,7 +18,7 @@ struct Operator   { string op; vector<Expr> lr; };
 // statements
 struct Dim;
 struct Print      { vector<Expr> arguments; };
-struct Let        { string name; Expr expr; };
+struct Let        { string name; Expr expr; bool global; };
 using  Stmt       = variant<Expr, Print, Dim, Let>;
 // class members
 struct  Dim       { string type, name; };
