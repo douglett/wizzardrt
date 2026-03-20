@@ -38,14 +38,14 @@ struct Runtime {
 
 	// === Run AST ===
 
-	const WizClass& AstClass(const string& name) const {
+	const WizClass& findclass(const string& name) const {
 		for (const auto& cl : wizclass)
 			if (cl.name == name)
 				return cl;
 		throw out_of_range("missing class AST: " + name);
 	}
-	const Func& AstFunc(const string& classname, const string& funcname) const {
-		auto& cl = AstClass(classname);
+	const Func& findfunc(const string& classname, const string& funcname) const {
+		auto& cl = findclass(classname);
 		for (auto& fn : cl.functions)
 			if (fn.name == funcname)
 				return fn;
@@ -54,7 +54,7 @@ struct Runtime {
 
 	int call(const string& classname, const string& funcname) {
 		printf("::Call: %s::%s\n", classname.c_str(), funcname.c_str());
-		auto& func = AstFunc(classname, funcname);
+		auto& func = findfunc(classname, funcname);
 		stackframe.push_back({});
 		for (auto& stmt : func.block)
 			rstmt(stmt);
@@ -63,7 +63,7 @@ struct Runtime {
 	}
 
 	void rstmt(const Stmt& st) {
-		// Expr
+		// Expression
 		if (auto* ex = get_if<Expr>(&st)) {
 			return rexpr(*ex), void();
 		}
@@ -110,6 +110,20 @@ struct Runtime {
 		}
 		throw runtime_error("rexpr: error in type " + to_string(ex.index()));
 	}
+
+	// string rexprs(const ExprS& ex) {
+	// 	if (auto* val = get_if<string>(&ex))
+	// 		return *val;
+	// 	else if (auto* var = get_if<Global>(&ex))
+	// 		return get<string>(getglobal(var->name));
+	// 	else if (auto* var = get_if<Local>(&ex))
+	// 		return get<string>(getlocal(var->name));
+	// 	else if (auto* op = get_if<Operator>(&ex)) {
+	// 		auto l = rexprs(op->lr.at(0));
+	// 		auto r = rexprs(op->lr.at(1));
+	// 		if (op->op == "+")  return get<string>(l) + get<string>(r);
+	// 	}
+	// }
 
 	string tostring(const Val& val) {
 		if (auto* s = get_if<string>(&val))
