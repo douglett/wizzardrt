@@ -19,7 +19,8 @@ struct Operator   { string op; vector<Expr> lr; };
 struct Dim;
 struct Print      { vector<Expr> arguments; };
 struct Let        { string name; Expr expr; bool global; };
-using  Stmt       = variant<Expr, Print, Dim, Let>;
+struct Input      { string prompt; Variable var; };
+using  Stmt       = variant<Expr, Print, Dim, Let, Input>;
 // class members
 struct  Dim       { string type, name; };
 struct  Func      { string type, name; vector<Dim> arguments; vector<Stmt> block; };

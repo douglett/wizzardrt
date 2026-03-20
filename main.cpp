@@ -1,11 +1,7 @@
 #include "src/wizzardrt.hpp"
 using namespace std;
 
-using Val2 = variant<int, double, string>;
-
-int main() {
-	printf("hello world\n");
-
+void test1() {
 	// test class
 	wizclass.push_back({ "TestClass", true });
 	auto& cl = wizclass.back();
@@ -62,9 +58,37 @@ int main() {
 
 	printf("::Runtime begin::\n");
 	Runtime r;
-	r.init();
+	// r.init();
 	r.call("TestClass", "test1_hello");
 	r.call("TestClass", "test2_int");
 	r.call("TestClass", "test3_locals");
 	r.call("TestClass", "test_lol");
+}
+
+void doug1() {
+	// test class
+	wizclass.push_back({ "Doug1", true });
+	auto& cl = wizclass.back();
+	cl.members.push_back({ "int", "dir" });
+
+	cl.functions.push_back({ "int", "main" });
+	auto& fn1 = cl.functions.back();
+	fn1.block = {
+		Dim{"string", "dir"},
+		Print{{ "You are standing in a strange room." }},
+		Input{"input num to proceed: ", {"dir"}},
+		Print{{ Variable{"dir"} }}
+	};
+
+	Show().all();
+	Validate().all();
+	Runtime r;
+	r.call("Doug1", "main");
+}
+
+int main() {
+	printf("hello world\n");
+
+	// test1();
+	doug1();
 }

@@ -46,6 +46,8 @@ struct Show {
 		else if (auto* let = get_if<Let>(&st))
 			printf("%slet %s =\n", indent(ind), let->name.c_str()),
 			pexpr(let->expr, ind+1);
+		else if (auto* inp = get_if<Input>(&st))
+			printf("%sinput '%s', %s\n", indent(ind), inp->prompt.c_str(), inp->var.name.c_str());
 		else
 			printf("%s(blank)\n", indent(ind));
 	}

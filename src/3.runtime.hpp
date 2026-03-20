@@ -9,7 +9,7 @@ struct Runtime {
 	Frame globals;
 	vector<Frame> stackframe;
 
-	void init() {
+	Runtime() {
 		for (const auto& cl : wizclass) {
 			staticinstance.push_back({ cl.name });
 			// auto& self = staticinstance.back();
@@ -27,14 +27,13 @@ struct Runtime {
 
 	// === Memory ===
 
-	Frame& frametop() {
-		if (stackframe.size()) return stackframe.back();
-		throw out_of_range("frametop");
-	}
-	Val& setlocal(string name, Val& val) { auto& dim = frametop().dims[name]; dim = val; return dim; }
-	Val& getlocal(string name) { return frametop().dims.at(name); }
-	Val& setglobal(string name, Val& val) { auto& dim = globals.dims[name]; dim = val; return dim; }
-	Val& getglobal(string name) { return globals.dims.at(name); }
+	Frame& frametop() { if (stackframe.size()) return stackframe.back(); throw out_of_range("frametop"); }
+	Val& setlocal (const string& name, Val& val) { auto& dim = frametop().dims[name]; dim = val; return dim; }
+	Val& getlocal (const string& name) { return frametop().dims.at(name); }
+	Val& setglobal(const string& name, Val& val) { auto& dim = globals.dims[name]; dim = val; return dim; }
+	Val& getglobal(const string& name) { return globals.dims.at(name); }
+	Val& getvar   (const string& name, bool global) { return global ? getglobal(name) : getlocal(name); }
+	Val& setvar   (const string& name, Val& val, bool global) { return global ? setglobal(name, val) : setlocal(name, val); }
 
 	// === Run AST ===
 
@@ -63,12 +62,17 @@ struct Runtime {
 	}
 
 	void rstmt(const Stmt& st) {
+		auto* ex  = get_if<Expr >(&st);
+		auto* pr  = get_if<Print>(&st);
+		auto* dim = get_if<Dim  >(&st);
+		auto* let = get_if<Let  >(&st);
+		auto* inp = get_if<Input>(&st);
 		// Expression
-		if (auto* ex = get_if<Expr>(&st)) {
+		if (ex) {
 			return rexpr(*ex), void();
 		}
 		// Print
-		else if (auto* pr = get_if<Print>(&st)) {
+		else if (pr) {
 			for (auto& ex : pr->arguments) {
 				auto val = rexpr(ex);
 				printf("%s ", tostring(val).c_str());
@@ -76,33 +80,38 @@ struct Runtime {
 			return printf("\n"), void();
 		}
 		// Dim
-		else if (auto* dim = get_if<Dim>(&st)) {
+		else if (dim) {
 			auto& local = frametop().dims[dim->name];
-			if (dim->type == "int")
-				return local = 0, void();
-			else if (dim->type == "string")
-				return local = "", void();
+			if      (dim->type == "int"   )  return local =  0, void();
+			else if (dim->type == "string")  return local = "", void();
 		}
 		// Let
-		else if (auto* let = get_if<Let>(&st)) {
+		else if (let) {
 			auto val = rexpr(let->expr);
-			let->global ? setglobal(let->name, val) : setlocal(let->name, val);
-			return;
+			return setvar(let->name, val, let->global), void();
+		}
+		// input
+		else if (inp) {
+			auto& var = getvar(inp->var.name, inp->var.global);
+			printf("%s", inp->prompt.c_str());
+			return getline(cin, get<string>(var)), void();
 		}
 		throw runtime_error("rstmt: " + to_string(st.index()));
 	}
 
 	// --- run expressions ---
 	Val rexpr(const Expr& ex) {
+		auto* val = get_if<Val>(&ex);
+		auto* var = get_if<Variable>(&ex);
+		auto* op  = get_if<Operator>(&ex);
 		// Value
-		if (auto* val = get_if<Val>(&ex))
+		if (val)
 			return *val;
 		// Variable (get)
-		else if (auto* var = get_if<Variable>(&ex)) {
-			return var->global ? getglobal(var->name) : getlocal(var->name);
-		}
+		else if (var)
+			return getvar(var->name, var->global);
 		// Operator (a + b)
-		else if (auto* op = get_if<Operator>(&ex)) {
+		else if (op) {
 			auto l = rexpr(op->lr.at(0));
 			auto r = rexpr(op->lr.at(1));
 			if      (op->op == "+i")  return get<int>(l) + get<int>(r);
@@ -126,12 +135,12 @@ struct Runtime {
 	// }
 
 	string tostring(const Val& val) {
-		if (auto* s = get_if<string>(&val))
-			return *s;
-		else if (auto* i = get_if<int>(&val))
-			return to_string(*i);
-		else if (auto* d = get_if<double>(&val))
-			return to_string(*d);
+		auto* i = get_if<int>(&val);
+		auto* d = get_if<double>(&val);
+		auto* s = get_if<string>(&val);
+		if      (i)  return to_string(*i);
+		else if (d)  return to_string(*d);
+		else if (s)  return *s;
 		throw runtime_error("tostring");
 	}
 };
