@@ -93,9 +93,13 @@ struct Runtime {
 		}
 		// input
 		else if (inp) {
-			auto& var = getvar(inp->var);
 			printf("%s", inp->prompt.c_str());
-			return getline(cin, get<string>(var)), void();
+			string line;
+			getline(cin, line);
+			auto& var = getvar(inp->var);
+			if      (get_if<int   >(&var))  return var = atoi(line.c_str()), void();
+			else if (get_if<double>(&var))  return var = atof(line.c_str()), void();
+			else if (get_if<string>(&var))  return var = line, void();
 		}
 		// if block
 		else if (ifst) {
@@ -125,8 +129,9 @@ struct Runtime {
 		else if (op) {
 			auto l = rexpr(op->lr.at(0));
 			auto r = rexpr(op->lr.at(1));
-			if      (op->op == "+i")  return get<int>(l) + get<int>(r);
-			else if (op->op == "+s")  return get<string>(l) + get<string>(r);
+			if      (op->op ==  "+i")  return get<int>(l) + get<int>(r);
+			else if (op->op ==  "+s")  return get<string>(l) + get<string>(r);
+			else if (op->op == "==i")  return get<int>(l) == get<int>(r);
 		}
 		throw runtime_error("rexpr: error in type " + to_string(ex.index()));
 	}

@@ -74,14 +74,47 @@ void doug1() {
 	cl.functions.push_back({ "int", "main" });
 	auto& fn1 = cl.functions.back();
 	fn1.block = {
-		Dim{"string", "dir"},
+		Dim{"int", "dir"},
+		// game story
 		Print{{ "You are standing in a strange room." }},
-		Input{{"dir"}, "input num to proceed: "},
-		Print{{ Variable{"dir"} }},
-
+		Print{{"There are doors leading north(1), south(2), east(3), and west(4)."}},
+		Input{{"dir"}, "Please pick a number to proceed: "},
+		// Print{{ Variable{"dir"} }},
+		// select direction
 		If{{
-			IfCond{1, { Print{{"hello world"}} }}
-		}}
+			// north
+			IfCond{
+				Operator{"==i", { Variable{"dir"}, 1 }}, {
+					Print{{"You open the north door... there was a bottomless pit there!"}},
+					Print{{"You fall into the pit and die."}}
+			}},
+			// south
+			IfCond{
+				Operator{"==i", { Variable{"dir"}, 2 }}, {
+					Print{{"You open the south door... a yeti jumps out at you!"}},
+					Print{{"The yeti gobbles you up. You taste disgusting."}} 
+			}},
+			// east
+			IfCond{
+				Operator{"==i", { Variable{"dir"}, 3 }}, {
+					Print{{"You open the east door... a samurai stands dramatically, framed by the rising sun."}},
+					Print{{"He chops your head off! Blood sprays out everywhere like a cool movie."}}
+			}},
+			// west
+			IfCond{
+				Operator{"==i", { Variable{"dir"}, 4 }}, {
+					Print{{"You open the west door... a cowboy is here holding a six-shooter. He tips his hat, 'Howdy pardner!'"}},
+					Print{{"Oops, the safety was off! He shoots you by accident and you die stupidly."}}
+			}},
+			// unknown
+			IfCond{
+				true, {
+					Print{{"Wracked with indecision, you stand around helplessly."}},
+					Print{{"You starve to death!"}} 
+			}}
+		}},
+		// end
+		Print{{"THE END!"}}
 	};
 
 	Show().all();
