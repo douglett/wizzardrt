@@ -32,8 +32,8 @@ struct Runtime {
 	Val& getlocal (const string& name) { return frametop().dims.at(name); }
 	Val& setglobal(const string& name, Val& val) { auto& dim = globals.dims[name]; dim = val; return dim; }
 	Val& getglobal(const string& name) { return globals.dims.at(name); }
-	Val& getvar   (const string& name, bool global) { return global ? getglobal(name) : getlocal(name); }
-	Val& setvar   (const string& name, Val& val, bool global) { return global ? setglobal(name, val) : setlocal(name, val); }
+	Val& getvar   (const Variable& var) { return var.global ? getglobal(var.name) : getlocal(var.name); }
+	Val& setvar   (const Variable& var, Val& val) { return var.global ? setglobal(var.name, val) : setlocal(var.name, val); }
 
 	// === Run AST ===
 
@@ -88,11 +88,11 @@ struct Runtime {
 		// Let
 		else if (let) {
 			auto val = rexpr(let->expr);
-			return setvar(let->var.name, val, let->var.global), void();
+			return setvar(let->var, val), void();
 		}
 		// input
 		else if (inp) {
-			auto& var = getvar(inp->var.name, inp->var.global);
+			auto& var = getvar(inp->var);
 			printf("%s", inp->prompt.c_str());
 			return getline(cin, get<string>(var)), void();
 		}
@@ -109,7 +109,7 @@ struct Runtime {
 			return *val;
 		// Variable (get)
 		else if (var)
-			return getvar(var->name, var->global);
+			return getvar(*var);
 		// Operator (a + b)
 		else if (op) {
 			auto l = rexpr(op->lr.at(0));
