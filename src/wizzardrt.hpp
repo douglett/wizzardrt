@@ -20,7 +20,10 @@ struct Dim;
 struct Print      { vector<Expr> arguments; };
 struct Let        { Variable var; Expr expr; };
 struct Input      { Variable var; string prompt = "> "; };
-using  Stmt       = variant<Expr, Print, Dim, Let, Input>;
+struct IfCond;
+struct If         { vector<IfCond> conditions; };
+using  Stmt       = variant<Expr, Print, Dim, Let, Input, If>;
+struct IfCond     { Expr expr; vector<Stmt> block; };
 // class members
 struct  Dim       { string type, name; };
 struct  Func      { string type, name; vector<Dim> arguments; vector<Stmt> block; };

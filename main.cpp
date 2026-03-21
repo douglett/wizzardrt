@@ -77,7 +77,11 @@ void doug1() {
 		Dim{"string", "dir"},
 		Print{{ "You are standing in a strange room." }},
 		Input{{"dir"}, "input num to proceed: "},
-		Print{{ Variable{"dir"} }}
+		Print{{ Variable{"dir"} }},
+
+		If{{
+			IfCond{1, { Print{{"hello world"}} }}
+		}}
 	};
 
 	Show().all();

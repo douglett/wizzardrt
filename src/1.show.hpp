@@ -48,6 +48,16 @@ struct Show {
 			pexpr(let->expr, ind+1);
 		else if (auto* inp = get_if<Input>(&st))
 			printf("%sinput '%s', %s\n", indent(ind), inp->prompt.c_str(), inp->var.name.c_str());
+		else if (auto* ifst = get_if<If>(&st)) {
+			printf("%sif:\n", indent(ind));
+			for (auto& cond : ifst->conditions) {
+				printf("%s::Cond:\n", indent(ind+1));
+				pexpr(cond.expr, ind+1);
+				printf("%s::Block:\n", indent(ind+1));
+				for (auto& st : cond.block)
+					pstmt(st, ind+1);
+			}
+		}
 		else
 			printf("%s(blank)\n", indent(ind));
 	}

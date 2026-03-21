@@ -62,11 +62,12 @@ struct Runtime {
 	}
 
 	void rstmt(const Stmt& st) {
-		auto* ex  = get_if<Expr >(&st);
-		auto* pr  = get_if<Print>(&st);
-		auto* dim = get_if<Dim  >(&st);
-		auto* let = get_if<Let  >(&st);
-		auto* inp = get_if<Input>(&st);
+		auto* ex   = get_if<Expr >(&st);
+		auto* pr   = get_if<Print>(&st);
+		auto* dim  = get_if<Dim  >(&st);
+		auto* let  = get_if<Let  >(&st);
+		auto* inp  = get_if<Input>(&st);
+		auto* ifst = get_if<If   >(&st);
 		// Expression
 		if (ex) {
 			return rexpr(*ex), void();
@@ -95,6 +96,16 @@ struct Runtime {
 			auto& var = getvar(inp->var);
 			printf("%s", inp->prompt.c_str());
 			return getline(cin, get<string>(var)), void();
+		}
+		// if block
+		else if (ifst) {
+			for (auto& cond : ifst->conditions)
+				if (truthy(rexpr(cond.expr))) {
+					for (auto& st2 : cond.block)
+						rstmt(st2);
+					break;
+				}
+			return;
 		}
 		throw runtime_error("rstmt: " + to_string(st.index()));
 	}
@@ -142,5 +153,11 @@ struct Runtime {
 		else if (d)  return to_string(*d);
 		else if (s)  return *s;
 		throw runtime_error("tostring");
+	}
+
+	bool truthy(const Val& val) {
+		if      (auto* i = get_if<int   >(&val))  return *i;
+		else if (auto* d = get_if<double>(&val))  return *d;
+		throw runtime_error("truthy: unknown conversion");
 	}
 };
