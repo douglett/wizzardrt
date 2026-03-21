@@ -18,8 +18,8 @@ struct Operator   { string op; vector<Expr> lr; };
 // statements
 struct Dim;
 struct Print      { vector<Expr> arguments; };
-struct Let        { string name; Expr expr; bool global; };
-struct Input      { string prompt; Variable var; };
+struct Let        { Variable var; Expr expr; };
+struct Input      { Variable var; string prompt = "> "; };
 using  Stmt       = variant<Expr, Print, Dim, Let, Input>;
 // class members
 struct  Dim       { string type, name; };

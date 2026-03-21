@@ -44,7 +44,7 @@ struct Show {
 		else if (auto* dim = get_if<Dim>(&st))
 			pdim(*dim, ind);
 		else if (auto* let = get_if<Let>(&st))
-			printf("%slet %s =\n", indent(ind), let->name.c_str()),
+			printf("%slet %s =\n", indent(ind), let->var.name.c_str()),
 			pexpr(let->expr, ind+1);
 		else if (auto* inp = get_if<Input>(&st))
 			printf("%sinput '%s', %s\n", indent(ind), inp->prompt.c_str(), inp->var.name.c_str());

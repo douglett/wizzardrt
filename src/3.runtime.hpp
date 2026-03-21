@@ -88,7 +88,7 @@ struct Runtime {
 		// Let
 		else if (let) {
 			auto val = rexpr(let->expr);
-			return setvar(let->name, val, let->global), void();
+			return setvar(let->var.name, val, let->var.global), void();
 		}
 		// input
 		else if (inp) {

@@ -28,7 +28,7 @@ void test1() {
 	auto& fn3 = cl.functions.back();
 	fn3.block = {
 		Dim{"int", "hello"},
-		Let{"hello", 123},
+		Let{{"hello"}, 123},
 		Print{{ "hello", Variable{"hello"} }}
 	};
 	
@@ -45,10 +45,10 @@ void test1() {
 		Operator{"+i", { 2, 2 }},
 
 		Dim{ "int", "hello" },
-		Let{ "hello", Operator{"+i", {1, 1}} },
+		Let{ {"hello"}, Operator{"+i", {1, 1}} },
 		
 		Dim{ "string", "s" },
-		Let{ "s", Operator{"+s", {"hello ", "world"}} },
+		Let{ {"s"}, Operator{"+s", {"hello ", "world"}} },
 
 		// Print{{ Variable{"hello"}, Variable{"s"} }}
 	};
@@ -76,7 +76,7 @@ void doug1() {
 	fn1.block = {
 		Dim{"string", "dir"},
 		Print{{ "You are standing in a strange room." }},
-		Input{"input num to proceed: ", {"dir"}},
+		Input{{"dir"}, "input num to proceed: "},
 		Print{{ Variable{"dir"} }}
 	};
 
