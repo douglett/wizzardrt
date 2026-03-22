@@ -9,6 +9,7 @@ using namespace std;
 
 // === Runtime structures ===
 // expressions
+// enum   ValType    { ValInt, ValDouble, ValString };
 using  Val        = variant<int, double, string>;
 struct Variable;
 struct Operator;

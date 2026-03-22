@@ -64,12 +64,9 @@ struct Show {
 
 	void pexpr(const Expr& ex, int ind) {
 		if (auto* val = get_if<Val>(&ex)) {
-			if (auto* i = get_if<int>(val))
-				printf("%s%d\n", indent(ind), *i);
-			else if (auto* d = get_if<double>(val))
-				printf("%s%f\n", indent(ind), *d);
-			else if (auto* s = get_if<string>(val))
-				printf("%s'%s'\n", indent(ind), s->c_str());
+			if      (auto* i = get_if<int   >(val))  printf("%s%d\n",   indent(ind), *i);
+			else if (auto* d = get_if<double>(val))  printf("%s%f\n",   indent(ind), *d);
+			else if (auto* s = get_if<string>(val))  printf("%s'%s'\n", indent(ind), s->c_str());
 		}
 		else if (auto* var = get_if<Variable>(&ex)) {
 			printf("%s%s: %s\n", indent(ind), var->global ? "Global" : "Local", var->name.c_str());
