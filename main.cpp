@@ -123,9 +123,43 @@ void doug1() {
 	r.call("Doug1", "main");
 }
 
+void doug2() {
+	// test class
+	wizclass.push_back({ "Doug2", true });
+	auto& cl = wizclass.back();
+	// main
+	cl.functions.push_back({ "int", "main" });
+	auto& fn1 = cl.functions.back();
+	fn1.block = {
+		Dim{"string", "dir"},
+		// directions
+		Input{{"dir"}, "Please pick a direction to proceed: "},
+		// if
+		If{{
+			IfCond{
+				Operator{"or", {
+					Operator{"==s", {Variable{"dir"}, "north"}},
+					Operator{"==s", {Variable{"dir"}, "n"}}
+				}}, {
+					Print{{"You go north!"}}
+				}
+			},
+			IfCond{1, {
+				Print{{"You don't go north."}}
+			}}
+		}}
+	};
+	// run
+	Show().all();
+	Validate().all();
+	Runtime r;
+	r.call("Doug2", "main");
+}
+
 int main() {
 	printf("hello world\n");
 
 	// test1();
-	doug1();
+	// doug1();
+	doug2();
 }

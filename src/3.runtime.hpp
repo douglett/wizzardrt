@@ -29,9 +29,9 @@ struct Runtime {
 
 	Frame& frametop() { if (stackframe.size()) return stackframe.back(); throw out_of_range("frametop"); }
 	Val& setlocal (const string& name, Val& val) { auto& dim = frametop().dims[name]; dim = val; return dim; }
-	Val& getlocal (const string& name) { return frametop().dims.at(name); }
+	Val& getlocal (const string& name) { if (frametop().dims.count(name)) return frametop().dims.at(name); throw out_of_range("missing local: '" + name + "'"); }
 	Val& setglobal(const string& name, Val& val) { auto& dim = globals.dims[name]; dim = val; return dim; }
-	Val& getglobal(const string& name) { return globals.dims.at(name); }
+	Val& getglobal(const string& name) { if (globals.dims.count(name)) return globals.dims.at(name); throw out_of_range("missing global: '" + name + "'"); }
 	Val& getvar   (const Variable& var) { return var.global ? getglobal(var.name) : getlocal(var.name); }
 	Val& setvar   (const Variable& var, Val& val) { return var.global ? setglobal(var.name, val) : setlocal(var.name, val); }
 
@@ -127,11 +127,18 @@ struct Runtime {
 			return getvar(*var);
 		// Operator (a + b)
 		else if (op) {
+			// calculate LHS & short circuit
 			auto l = rexpr(op->lr.at(0));
+			if      (op->op ==  "or" && truthy(l))  return true; // special case - short circuit
+			// RHS
 			auto r = rexpr(op->lr.at(1));
-			if      (op->op ==  "+i")  return get<int>(l) + get<int>(r);
-			else if (op->op ==  "+s")  return get<string>(l) + get<string>(r);
+			// integers
+			if      (op->op ==  "or")  return truthy(r);
+			else if (op->op ==  "+i")  return get<int>(l)  + get<int>(r);
 			else if (op->op == "==i")  return get<int>(l) == get<int>(r);
+			// strings
+			else if (op->op ==  "+s")  return get<string>(l)  + get<string>(r);
+			else if (op->op == "==s")  return get<string>(l) == get<string>(r);
 		}
 		throw runtime_error("rexpr: error in type " + to_string(ex.index()));
 	}
