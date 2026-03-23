@@ -144,6 +144,14 @@ void doug2() {
 					Print{{"You go north!"}}
 				}
 			},
+			IfCond{
+				Operator{"and", {
+					Operator{"==s", {Variable{"dir"}, "s"}},
+					0
+				}}, {
+					Print{{"You go south!"}}
+				}
+			},
 			IfCond{1, {
 				Print{{"You don't go north."}}
 			}}

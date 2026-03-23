@@ -129,11 +129,13 @@ struct Runtime {
 		else if (op) {
 			// calculate LHS & short circuit
 			auto l = rexpr(op->lr.at(0));
-			if      (op->op ==  "or" && truthy(l))  return true; // special case - short circuit
+			if      (op->op ==  "or" &&  truthy(l))  return true;
+			else if (op->op == "and" && !truthy(l))  return false;
 			// RHS
 			auto r = rexpr(op->lr.at(1));
 			// integers
 			if      (op->op ==  "or")  return truthy(r);
+			else if (op->op == "and")  return truthy(r);
 			else if (op->op ==  "+i")  return get<int>(l)  + get<int>(r);
 			else if (op->op == "==i")  return get<int>(l) == get<int>(r);
 			// strings
