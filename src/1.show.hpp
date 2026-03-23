@@ -24,30 +24,38 @@ struct Show {
 	}
 	
 	void pfunc(const Func& fn, int ind) {
+		// function header
 		printf("%sFunc: %s %s\n", indent(ind), fn.type.c_str(), fn.name.c_str());
 		for (auto& dim : fn.arguments)
 			pdim(dim, ind+1);
+		// function body
 		printf("%s::Body:\n", indent(ind+1));
 		for (auto& st : fn.block)
 			pstmt(st, ind+1);
 	}
 
 	void pstmt(const Stmt& st, int ind) {
+		// Print
 		if (auto* pr = get_if<Print>(&st)) {
 			printf("%sprint:\n", indent(ind));
 			for (auto& ex : pr->arguments)
 				pexpr(ex, ind+1);
 		}
+		// Expr
 		else if (auto* ex = get_if<Expr>(&st))
 			printf("%sexpr:\n", indent(ind)),
 			pexpr(*ex, ind+1);
+		// Dim
 		else if (auto* dim = get_if<Dim>(&st))
 			pdim(*dim, ind);
+		// Let
 		else if (auto* let = get_if<Let>(&st))
 			printf("%slet %s =\n", indent(ind), let->var.name.c_str()),
 			pexpr(let->expr, ind+1);
+		// Input
 		else if (auto* inp = get_if<Input>(&st))
 			printf("%sinput '%s', %s\n", indent(ind), inp->prompt.c_str(), inp->var.name.c_str());
+		// If block
 		else if (auto* ifst = get_if<If>(&st)) {
 			printf("%sif:\n", indent(ind));
 			for (auto& cond : ifst->conditions) {
@@ -58,24 +66,29 @@ struct Show {
 					pstmt(st, ind+1);
 			}
 		}
+		// Unknown
 		else
 			printf("%s(blank)\n", indent(ind));
 	}
 
 	void pexpr(const Expr& ex, int ind) {
+		// Value
 		if (auto* val = get_if<Val>(&ex)) {
 			if      (auto* i = get_if<int   >(val))  printf("%s%d\n",   indent(ind), *i);
 			else if (auto* d = get_if<double>(val))  printf("%s%f\n",   indent(ind), *d);
 			else if (auto* s = get_if<string>(val))  printf("%s'%s'\n", indent(ind), s->c_str());
 		}
+		// Variable
 		else if (auto* var = get_if<Variable>(&ex)) {
 			printf("%s%s: %s\n", indent(ind), var->global ? "Global" : "Local", var->name.c_str());
 		}
+		// Operator
 		else if (auto* op = get_if<Operator>(&ex)) {
 			printf("%s%s\n", indent(ind), op->op.c_str());
 			pexpr(op->lr.at(0), ind+1);
 			pexpr(op->lr.at(1), ind+1);
 		}
+		// Unknown
 		else {
 			printf("%s(blank)\n", indent(ind));
 		}

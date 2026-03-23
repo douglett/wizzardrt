@@ -91,7 +91,7 @@ struct Runtime {
 			auto val = rexpr(let->expr);
 			return setvar(let->var, val), void();
 		}
-		// input
+		// Input
 		else if (inp) {
 			printf("%s", inp->prompt.c_str());
 			string line;
@@ -101,7 +101,7 @@ struct Runtime {
 			else if (get_if<double>(&var))  return var = atof(line.c_str()), void();
 			else if (get_if<string>(&var))  return var = line, void();
 		}
-		// if block
+		// If block
 		else if (ifst) {
 			for (auto& cond : ifst->conditions)
 				if (truthy(rexpr(cond.expr))) {
@@ -136,27 +136,10 @@ struct Runtime {
 		throw runtime_error("rexpr: error in type " + to_string(ex.index()));
 	}
 
-	// string rexprs(const ExprS& ex) {
-	// 	if (auto* val = get_if<string>(&ex))
-	// 		return *val;
-	// 	else if (auto* var = get_if<Global>(&ex))
-	// 		return get<string>(getglobal(var->name));
-	// 	else if (auto* var = get_if<Local>(&ex))
-	// 		return get<string>(getlocal(var->name));
-	// 	else if (auto* op = get_if<Operator>(&ex)) {
-	// 		auto l = rexprs(op->lr.at(0));
-	// 		auto r = rexprs(op->lr.at(1));
-	// 		if (op->op == "+")  return get<string>(l) + get<string>(r);
-	// 	}
-	// }
-
 	string tostring(const Val& val) {
-		auto* i = get_if<int>(&val);
-		auto* d = get_if<double>(&val);
-		auto* s = get_if<string>(&val);
-		if      (i)  return to_string(*i);
-		else if (d)  return to_string(*d);
-		else if (s)  return *s;
+		if      (auto* i = get_if<int   >(&val))  return to_string(*i);
+		else if (auto* d = get_if<double>(&val))  return to_string(*d);
+		else if (auto* s = get_if<string>(&val))  return *s;
 		throw runtime_error("tostring");
 	}
 
