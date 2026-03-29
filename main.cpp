@@ -168,6 +168,8 @@ void parsetest() {
 	Tokenizer tok;
 	tok.tokenize("scripts/test.wizz");
 	tok.show();
+
+	Parse p;
 }
 
 int main() {

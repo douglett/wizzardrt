@@ -4,11 +4,13 @@
 struct Tokenizer {
 	struct Tok { string str; int lpos; int hpos; };
 	const Tok TOK_EOF = { "$EOF", -1, -1 };
-	int flag_eol = 0;
-	string lcomment = "//";
+	const int flag_eol = 0;
+	const string lcomment = "//";
 	vector<Tok> tok;
 	string errormsg;
 	int pos = 0, plinepos = 0;
+
+	// === Tokenize File ===
 
 	int tokenize(const string& fname) {
 		fstream fs(fname, ios::in);
@@ -54,20 +56,17 @@ struct Tokenizer {
 		}
 		// final token (if necessary)
 		addtok();
-		// add EOF token, if required
+		// add EOL token, if required
 		if (flag_eol)  t = "$EOL", addtok();
 		return true;
 	}
 
-	int reset() {
-		tok = {}, errormsg = "", pos = plinepos = 0;
-		return 0;
-	}
-
 	// helpers
+	void reset() {
+		tok = {}, errormsg = "", pos = plinepos = 0;
+	}
 	int error(const string& msg) {
-		errormsg = msg;
-		return false;
+		return errormsg = msg, false;
 	}
 	void show() {
 		cout << "tokens: ";
@@ -82,7 +81,7 @@ struct Tokenizer {
 		return s;
 	}
 
-	// parsing
+	// parsing primatives
 	int eof() {
 		return pos < 0 || pos >= (int)tok.size();
 	}
