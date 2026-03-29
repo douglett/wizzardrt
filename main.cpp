@@ -164,10 +164,17 @@ void doug2() {
 	r.call("Doug2", "main");
 }
 
+void parsetest() {
+	Tokenizer tok;
+	tok.tokenize("scripts/test.wizz");
+	tok.show();
+}
+
 int main() {
 	printf("hello world\n");
 
 	// test1();
 	// doug1();
-	doug2();
+	// doug2();
+	parsetest();
 }

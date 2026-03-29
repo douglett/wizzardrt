@@ -79,9 +79,8 @@ struct Show {
 			else if (auto* s = get_if<string>(val))  printf("%s'%s'\n", indent(ind), s->c_str());
 		}
 		// Variable
-		else if (auto* var = get_if<Variable>(&ex)) {
+		else if (auto* var = get_if<Variable>(&ex))
 			printf("%s%s: %s\n", indent(ind), var->global ? "Global" : "Local", var->name.c_str());
-		}
 		// Operator
 		else if (auto* op = get_if<Operator>(&ex)) {
 			printf("%s%s\n", indent(ind), op->op.c_str());
@@ -89,9 +88,8 @@ struct Show {
 			pexpr(op->lr.at(1), ind+1);
 		}
 		// Unknown
-		else {
+		else
 			printf("%s(blank)\n", indent(ind));
-		}
 	}
 
 	// helpers
