@@ -4,11 +4,15 @@ static class test;
 
 int main() {
 	print 1234;
-	// int a = 4;
+	
 	int a;
 	print a;
 	a = 4;
 	print a;
+
+	int aa = 4;
+	print aa;
+	
 	// test2();
 	// print a;
 	// int b = 2;

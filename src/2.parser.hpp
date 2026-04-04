@@ -117,7 +117,9 @@ struct Parser {
 		dim.name  = presult.at(1);
 		// assignment
 		if (accept("=")) {
-			error("pdim", "TODO: dim assign");
+			// error("pdim", "TODO: dim assign");
+			dim.expr = Expr{};
+			pexpression(dim.expr.value(), true);
 		}
 		require(";");
 		return true;
@@ -141,7 +143,7 @@ struct Parser {
 		else if (accept("$identifier"))
 			return expr = Variable{ presult.at(0) }, true;
 		else if (accept("$strlit"))
-			return expr = Val{ presult.at(0) }, true;
+			return expr = Val{ Tokenizer::stripliteral(presult.at(0)) }, true;
 		return false;
 	}
 

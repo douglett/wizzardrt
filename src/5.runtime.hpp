@@ -83,8 +83,13 @@ struct Runtime {
 		// Dim
 		else if (dim) {
 			auto& local = frametop().dims[dim->name];
-			if      (dim->type == "int"   )  return local =  0, void();
-			else if (dim->type == "string")  return local = "", void();
+			if      (dim->type == "int"   )  local =  0;
+			else if (dim->type == "string")  local = "";
+			if (dim->expr) {
+				auto val = rexpr(dim->expr.value());
+				setlocal(dim->name, val);
+			}
+			return;
 		}
 		// Let
 		else if (let) {

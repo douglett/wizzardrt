@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <variant>
+#include <optional>
 #include <memory>
 #include <map>
 #include <fstream>
@@ -26,7 +27,7 @@ struct If         { vector<IfCond> conditions; };
 using  Stmt       = variant<Expr, Print, Dim, Let, Input, If>;
 struct IfCond     { Expr expr; vector<Stmt> block; };
 // class members
-struct  Dim       { string type, name; };
+struct  Dim       { string type, name; optional<Expr> expr; };
 struct  Func      { string type, name; vector<Dim> arguments; vector<Stmt> block; };
 struct  WizClass  { string name; bool isstatic; vector<Dim> members; vector<Func> functions; };
 // classes list
