@@ -23,15 +23,16 @@ struct Parser {
 
 	int pclass() {
 		log(4, "(trace) pclass");
-		// create object
-		auto& mclass = wizclass.emplace_back();
 		// parse header
 		require("static class $identifier ;");
-		mclass.name  = presult.at(2);
+		// create object
+		auto& mclass    = wizclass.emplace_back();
+		mclass.name     = presult.at(2);
+		mclass.isstatic = true;
 		// class members
 		while (!accept("$eof"))
 			if      (pfunction(mclass.functions)) ;
-			// else if (pdim(ast.at("dims"))) ;
+			else if (pdimstatic(mclass.members)) ;
 			else    break;
 		// class end
 		require("$eof");
@@ -52,6 +53,36 @@ struct Parser {
 		return true;
 	}
 
+	int pdimstatic(vector<Dim>& members) {
+		log(4, "(trace) pdimstatic");
+		if (Dim d; pdim(d))
+			return members.push_back(d), true;
+		return false;
+	}
+	int pdimlocal(vector<Stmt>& block) {
+		log(4, "(trace) pdimlocal");
+		if (Dim d; pdim(d))
+			return block.push_back(d), true;
+		return false;
+	}
+	
+	int pdim(Dim& dim) {
+		log(4, "(trace) pdim");
+		if (!accept("$identifier $identifier"))
+			return false;
+		// create object
+		// auto& dim = get<Dim>( block.emplace_back(Dim{}) );
+		dim.type  = presult.at(0);
+		dim.name  = presult.at(1);
+		// assignment
+		if (accept("=")) {
+			dim.expr = Expr{};
+			pexpression(dim.expr.value(), true);
+		}
+		require(";");
+		return true;
+	}
+
 	int pblock(vector<Stmt>& block) {
 		log(4, "(trace) pblock");
 		require("{");
@@ -64,7 +95,7 @@ struct Parser {
 		// 	else if (pwhile(block)) ;
 		// 	else if (pbreak(block)) ;
 		// 	else if (preturn(block)) ;
-			else if (pdim(block)) ;
+			else if (pdimlocal(block)) ;
 		// 	else if (pexpressionline(block)) ;
 			else    { error("pblock", "unknown statement");  break; }
 		require("}");
@@ -103,23 +134,6 @@ struct Parser {
 			}
 		}
 		// eol
-		require(";");
-		return true;
-	}
-
-	int pdim(vector<Stmt>& block) {
-		log(4, "(trace) pdim");
-		if (!accept("$identifier $identifier"))
-			return false;
-		// create object
-		auto& dim = get<Dim>( block.emplace_back(Dim{}) );
-		dim.type  = presult.at(0);
-		dim.name  = presult.at(1);
-		// assignment
-		if (accept("=")) {
-			dim.expr = Expr{};
-			pexpression(dim.expr.value(), true);
-		}
 		require(";");
 		return true;
 	}

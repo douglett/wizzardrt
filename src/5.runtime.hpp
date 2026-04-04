@@ -11,7 +11,7 @@ struct Runtime {
 
 	Runtime() {
 		for (const auto& cl : wizclass) {
-			staticinstance.push_back({ cl.name });
+			// staticinstance.push_back({ cl.name });
 			// auto& self = staticinstance.back();
 			// // set up members of static class
 			// if (self.isstatic)
@@ -21,6 +21,20 @@ struct Runtime {
 			// 		else if (dim.type == "string")
 			// 			self.memberss[dim.name] = "";
 			// 	}
+
+			// create static instance
+			auto& self = staticinstance.emplace_back();
+			self.name  = cl.name;
+			// init members
+			for (const auto& dim : cl.members) {
+				auto& local = self.members[dim.name];
+				if      (dim.type == "int"   )  local =  0;
+				else if (dim.type == "string")  local = "";
+				if (dim.expr) {
+					auto val = rexpr(dim.expr.value());
+					setglobal(dim.name, val);
+				}
+			}
 		}
 		printf("::init OK!\n");
 	}

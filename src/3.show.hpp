@@ -20,6 +20,8 @@ struct Show {
 
 	void pdim(const Dim& dim, int ind) {
 		printf("%sDim: %s %s\n", indent(ind), dim.type.c_str(), dim.name.c_str());
+		if (dim.expr)
+			pexpr(*dim.expr, ind+1);
 	}
 	
 	void pfunc(const Func& fn, int ind) {
