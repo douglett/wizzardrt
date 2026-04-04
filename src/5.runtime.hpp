@@ -27,13 +27,41 @@ struct Runtime {
 
 	// === Memory ===
 
-	Frame& frametop() { if (stackframe.size()) return stackframe.back(); throw out_of_range("frametop"); }
-	Val& setlocal (const string& name, Val& val) { auto& dim = frametop().dims[name]; dim = val; return dim; }
-	Val& getlocal (const string& name) { if (frametop().dims.count(name)) return frametop().dims.at(name); throw out_of_range("missing local: '" + name + "'"); }
-	Val& setglobal(const string& name, Val& val) { auto& dim = globals.dims[name]; dim = val; return dim; }
-	Val& getglobal(const string& name) { if (globals.dims.count(name)) return globals.dims.at(name); throw out_of_range("missing global: '" + name + "'"); }
-	Val& getvar   (const Variable& var) { return var.global ? getglobal(var.name) : getlocal(var.name); }
-	Val& setvar   (const Variable& var, Val& val) { return var.global ? setglobal(var.name, val) : setlocal(var.name, val); }
+	Frame& frametop() {
+		if (stackframe.size())
+			return stackframe.back();
+		throw out_of_range("frametop");
+	}
+	Val& setlocal (const string& name, Val& val) {
+		auto& dim = frametop().dims[name];
+		if (dim.index() != val.index())
+			throw runtime_error("setlocal: type mismatch");
+		dim = val;
+		return dim;
+	}
+	Val& getlocal (const string& name) {
+		if (frametop().dims.count(name))
+			return frametop().dims.at(name);
+		throw out_of_range("missing local: '" + name + "'");
+	}
+	Val& setglobal(const string& name, Val& val) {
+		auto& dim = globals.dims[name];
+		if (dim.index() != val.index())
+			throw runtime_error("setglobal: type mismatch");
+		dim = val;
+		return dim;
+	}
+	Val& getglobal(const string& name) {
+		if (globals.dims.count(name))
+			return globals.dims.at(name);
+		throw out_of_range("missing global: '" + name + "'");
+	}
+	Val& getvar   (const Variable& var) {
+		return var.global ? getglobal(var.name) : getlocal(var.name);
+	}
+	Val& setvar   (const Variable& var, Val& val) {
+		return var.global ? setglobal(var.name, val) : setlocal(var.name, val);
+	}
 
 	// === Run AST ===
 

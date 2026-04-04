@@ -117,7 +117,6 @@ struct Parser {
 		dim.name  = presult.at(1);
 		// assignment
 		if (accept("=")) {
-			// error("pdim", "TODO: dim assign");
 			dim.expr = Expr{};
 			pexpression(dim.expr.value(), true);
 		}
