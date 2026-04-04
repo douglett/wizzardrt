@@ -172,7 +172,10 @@ void parsetest() {
 	Parser p(tok);
 	p.parse();
 	Show().all();
-	// Validate().all();
+	Validate().all();
+
+	Runtime r;
+	r.call("test", "main");
 }
 
 int main() {

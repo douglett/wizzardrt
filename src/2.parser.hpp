@@ -105,8 +105,13 @@ struct Parser {
 
 	int patom(Expr& expr) {
 		log(4, "(trace) patom");
-		if (accept("$identifier"))
+		if (accept("$number"))
+			return expr = Val{ stoi(presult.at(0)) }, true;
+		// else if (accept("$identifier ("))
+		else if (accept("$identifier"))
 			return expr = Variable{ presult.at(0) }, true;
+		else if (accept("$strlit"))
+			return expr = Val{ presult.at(0) }, true;
 		return false;
 	}
 
