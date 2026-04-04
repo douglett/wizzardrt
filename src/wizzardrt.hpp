@@ -34,7 +34,7 @@ vector<WizClass>  wizclass;
 
 // === Other includes ===
 #include "1.tokenizer.hpp"
-#include "2.parse.hpp"
+#include "2.parser.hpp"
 #include "3.show.hpp"
 #include "4.validate.hpp"
 #include "5.runtime.hpp"

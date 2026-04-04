@@ -169,7 +169,7 @@ void parsetest() {
 	tok.tokenize("scripts/test.wizz");
 	tok.show();
 
-	Parse p(tok);
+	Parser p(tok);
 	p.parse();
 	Show().all();
 	// Validate().all();

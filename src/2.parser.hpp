@@ -1,13 +1,13 @@
 #pragma once
 #include "wizzardrt.hpp"
 
-struct Parse {
+struct Parser {
 	// enum LOG_LEVEL { LOG_NONE, LOG_ERROR, LOG_INFO, LOG_EXTRA, LOG_TRACE };
 	Tokenizer& tok;
 	vector<string> presult;
 	int loglevel = 2, presultline = 0;
 
-	Parse(Tokenizer& mtok) : tok(mtok) { }
+	Parser(Tokenizer& mtok) : tok(mtok) { }
 
 	// === Parse ===
 
