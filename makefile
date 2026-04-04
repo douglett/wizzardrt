@@ -1,10 +1,13 @@
 HEAD = src/*.hpp
+OUT = main.exe
 
-main.out: main.cpp $(HEAD)
-	g++ -Wall -std=c++17 -o main.out main.cpp
+$(OUT): main.cpp $(HEAD)
+	g++ -Wall -std=c++17 -o $(OUT) main.cpp
 
-run: main.out
-	./main.out
+all: $(OUT)
+
+run: $(OUT)
+	./$(OUT)
 	
 clean:
-	rm -rfv *.out
+	rm -rfv *.out *.exe

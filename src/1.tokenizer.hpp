@@ -4,18 +4,19 @@
 struct Tokenizer {
 	struct Tok { string str; int lpos; int hpos; };
 	const Tok TOK_EOF = { "$EOF", -1, -1 };
-	const int flag_eol = 0;
+	const int flag_eol = 0, flag_quiet = 0;
 	const string lcomment = "//";
 	vector<Tok> tok;
+	vector<string> presult;
 	string errormsg;
-	int pos = 0, plinepos = 0;
+	int pos = 0, plinepos = 0, presultline = 0;
 
 	// === Tokenize File ===
 
 	int tokenize(const string& fname) {
 		fstream fs(fname, ios::in);
 		if (!fs.is_open())
-			return error("error: opening file: " + fname);
+			return error("opening file: " + fname);
 		// setup
 		reset();
 		string line;
@@ -47,7 +48,7 @@ struct Tokenizer {
 					t += line[i];
 				t += '"';
 				if (i >= line.length())
-					return error("error: unterminated string, line " + to_string(plinepos));
+					return error("unterminated string, line " + to_string(plinepos));
 			}
 			// special characters
 			else if (!isalphanum(c))  addtok(), t += c, addtok();
@@ -66,7 +67,11 @@ struct Tokenizer {
 		tok = {}, errormsg = "", pos = plinepos = 0;
 	}
 	int error(const string& msg) {
-		return errormsg = msg, false;
+		// errormsg = msg + " (line-" + to_string(tok.linepos()) + " @ '" + tok.peek() + "')";
+		errormsg = msg;
+		if (!flag_quiet)
+			fprintf(stderr, "[Tokenizer] error: %s\n", errormsg.c_str());
+		return false;
 	}
 	void show() {
 		cout << "tokens: ";
@@ -93,6 +98,42 @@ struct Tokenizer {
 	}
 	const string& get() {
 		return eof() ? TOK_EOF.str : tok[pos++].str;
+	}
+
+	// complex parsing
+	int accept(const string& rulestr) {
+		auto rulelist = splitstr(rulestr);
+		if (rulelist.size() < 1)
+			return error("empty rule");
+		presult = {};
+		presultline = linepos();
+		int mpos = pos;
+		for (const auto& rule : rulelist)
+			if (rule == "$eof" && eof())
+				presult.push_back(get());
+			else if (rule == "$identifier" && isidentifier(peek()))
+				presult.push_back(get());
+			else if (rule == "$number" && isnumber(peek()))
+				presult.push_back(get());
+			else if (rule == "$strlit" && isliteral(peek()))
+				presult.push_back(get());
+			else if (peek() == rule)
+				presult.push_back(get());
+			else
+				return pos = mpos, false;
+		return true;
+	}
+
+	int require(const string& rule) {
+		if (accept(rule))
+			return true;
+		return error("expected '" + rule + "'");
+	}
+
+	int peek(const string& rule) {
+		int mpos = pos;
+		int ok = accept(rule);
+		return pos = mpos, ok;
 	}
 
 	// === Token Helpers ===

@@ -8,12 +8,12 @@ int main() {
 	// print a;
 	// test2();
 	// print a;
-	int b = 2;
-	print b;
-	b = 3;
-	print b;
+	// int b = 2;
+	// print b;
+	// b = 3;
+	// print b;
 }
 
 int test2() {
-	print a;
+	// print a;
 }
