@@ -2,10 +2,10 @@
 #include "wizzardrt.hpp"
 
 struct Parse {
-	// enum LOG_LEVEL { LOG_NONE, LOG_BASIC, LOG_EXTRA, LOG_FULL, LOG_TRACE };
+	// enum LOG_LEVEL { LOG_NONE, LOG_ERROR, LOG_INFO, LOG_EXTRA, LOG_TRACE };
 	Tokenizer& tok;
 	vector<string> presult;
-	int loglevel = 1, presultline = 0;
+	int loglevel = 2, presultline = 0;
 
 	Parse(Tokenizer& mtok) : tok(mtok) { }
 
@@ -13,13 +13,10 @@ struct Parse {
 
 	int parse() {
 		loglevel = 4;  // 4 = trace
-		// tokenize(fname);
-		// parse program
-		log(1, "syntax parsing...");
+		// parse single class
+		log(2, "syntax parsing (" + tok.fname + ")...");
 		pclass();
-		// show success
-		// show();
-		log(1, "file parsed successfully!");
+		log(2, "file parsed successfully!");
 		// ok
 		return true;
 	}
@@ -27,11 +24,10 @@ struct Parse {
 	int pclass() {
 		log(4, "(trace) pclass");
 		// create object
-		wizclass.push_back({});
-		auto& mclass = wizclass.back();
+		auto& mclass = wizclass.emplace_back();
 		// parse header
 		require("static class $identifier ;");
-		mclass.name = presult.at(2);
+		mclass.name  = presult.at(2);
 		// class members
 		while (!accept("$eof"))
 			if      (pfunction(mclass.functions)) ;
@@ -43,7 +39,36 @@ struct Parse {
 	}
 	
 	int pfunction(vector<Func>& functions) {
-		return false;
+		log(4, "(trace) pfunction");
+		if (!accept("int $identifier ("))
+			return false;
+		// create object
+		auto& func = functions.emplace_back();
+		func.type  = presult.at(1);
+		func.name  = presult.at(1);
+		require(")");
+		// function body
+		pblock(func.block);
+		return true;
+	}
+
+	int pblock(vector<Stmt>& block) {
+		log(4, "(trace) pblock");
+		require("{");
+		// while (!tok.eof())
+		// 	if      (peek("}"))  break;
+		// 	else if (passign(block)) ;
+		// 	else if (pprint(block)) ;
+		// 	else if (pinput(block)) ;
+		// 	else if (pif(block)) ;
+		// 	else if (pwhile(block)) ;
+		// 	else if (pbreak(block)) ;
+		// 	else if (preturn(block)) ;
+		// 	else if (pdim(block)) ;
+		// 	else if (pexpressionline(block)) ;
+		// 	else    { error("pblock", "unknown statement");  break; }
+		require("}");
+		return true;
 	}
 
 	// === Helpers ===
@@ -61,18 +86,16 @@ struct Parse {
 	}
 	int accept(const string& rulestr) {
 		int ok = tok.accept(rulestr);
-		return presult = tok.presult, presultline = tok.presultline, ok;
+		return presult = tok.presult, ok;
 	}
 	int require(const string& rule) {
 		if (accept(rule))
 			return true;
 		return error("syntax-error", "expected '" + rule + "'");
-		// return error("syntax-error", tok.errormsg);
 	}
 	int peek(const string& rule) {
 		int mpos = tok.pos;
 		int ok = accept(rule);
 		return tok.pos = mpos, ok;
-		// return tok.peek(rule);
 	}
 };

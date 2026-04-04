@@ -16,7 +16,6 @@ struct Show {
 			pdim(var, 1);
 		for (auto& fn : cl.functions)
 			pfunc(fn, 1);
-		printf("\n");
 	}
 
 	void pdim(const Dim& dim, int ind) {

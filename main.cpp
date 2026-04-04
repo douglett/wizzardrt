@@ -171,6 +171,8 @@ void parsetest() {
 
 	Parse p(tok);
 	p.parse();
+	Show().all();
+	// Validate().all();
 }
 
 int main() {

@@ -4,27 +4,31 @@
 struct Tokenizer {
 	struct Tok { string str; int lpos; int hpos; };
 	const Tok TOK_EOF = { "$EOF", -1, -1 };
-	const int flag_eol = 0, flag_quiet = 0;
+	const int flag_eol = 0;
 	const string lcomment = "//";
 	vector<Tok> tok;
 	vector<string> presult;
-	string errormsg;
-	int pos = 0, plinepos = 0, presultline = 0;
+	string fname, errormsg;
+	int loglevel = 4, pos = 0, plinepos = 0, presultline = 0;
 
 	// === Tokenize File ===
 
 	int tokenize(const string& fname) {
+		log(2, "loading file (" + fname + ")...");
 		fstream fs(fname, ios::in);
 		if (!fs.is_open())
 			return error("opening file: " + fname);
 		// setup
 		reset();
+		this->fname = fname;
 		string line;
+		log(2, "tokenizing file...");
 		// parse line-by-line
 		while (getline(fs, line))
 			if (!tokenizeline(line))
 				return false;
 		// ok
+		log(2, "tokenizing OK!");
 		return true;
 	}
 
@@ -64,12 +68,17 @@ struct Tokenizer {
 
 	// helpers
 	void reset() {
-		tok = {}, errormsg = "", pos = plinepos = 0;
+		tok = {}, fname = "", errormsg = "", pos = plinepos = 0;
+	}
+	int log(int level, const string& msg) {
+		if (loglevel >= level)
+			printf("[Tokenizer] %s\n", msg.c_str());
+		return true;
 	}
 	int error(const string& msg) {
 		// errormsg = msg + " (line-" + to_string(tok.linepos()) + " @ '" + tok.peek() + "')";
 		errormsg = msg;
-		if (!flag_quiet)
+		if (loglevel >= 1)
 			fprintf(stderr, "[Tokenizer] error: %s\n", errormsg.c_str());
 		return false;
 	}
