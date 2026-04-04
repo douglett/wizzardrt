@@ -5,7 +5,9 @@ static class test;
 int main() {
 	print 1234;
 	// int a = 4;
-	// print a;
+	int a;
+	// a = 4;
+	print a;
 	// test2();
 	// print a;
 	// int b = 2;

@@ -57,16 +57,16 @@ struct Parser {
 		require("{");
 		while (!tok.eof())
 			if      (peek("}"))  break;
-		// 	else if (passign(block)) ;
+			// else if (plet(block)) ;
 			else if (pprint(block)) ;
 		// 	else if (pinput(block)) ;
 		// 	else if (pif(block)) ;
 		// 	else if (pwhile(block)) ;
 		// 	else if (pbreak(block)) ;
 		// 	else if (preturn(block)) ;
-		// 	else if (pdim(block)) ;
+			else if (pdim(block)) ;
 		// 	else if (pexpressionline(block)) ;
-		// 	else    { error("pblock", "unknown statement");  break; }
+			else    { error("pblock", "unknown statement");  break; }
 		require("}");
 		return true;
 	}
@@ -89,6 +89,22 @@ struct Parser {
 			}
 		}
 		// eol
+		require(";");
+		return true;
+	}
+
+	int pdim(vector<Stmt>& block) {
+		log(4, "(trace) pdim");
+		if (!accept("$identifier $identifier"))
+			return false;
+		// create object
+		auto& dim = get<Dim>( block.emplace_back(Dim{}) );
+		dim.type  = presult.at(0);
+		dim.name  = presult.at(1);
+		// assignment
+		if (accept("=")) {
+			error("pdim", "TODO: dim assign");
+		}
 		require(";");
 		return true;
 	}
