@@ -57,7 +57,7 @@ struct Parser {
 		require("{");
 		while (!tok.eof())
 			if      (peek("}"))  break;
-			// else if (plet(block)) ;
+			else if (plet(block)) ;
 			else if (pprint(block)) ;
 		// 	else if (pinput(block)) ;
 		// 	else if (pif(block)) ;
@@ -72,6 +72,20 @@ struct Parser {
 	}
 
 	// === Statements ===
+
+	int plet(vector<Stmt>& block) {
+		log(4, "(trace) passign");
+		if (!accept("$identifier ="))
+			return false;
+		// create object
+		auto& p   = block.emplace_back(Let{});
+		auto& let = get<Let>(p);
+		let.var   = { presult.at(0) };
+		// parse expression
+		pexpression(let.expr);
+		require(";");
+		return true;
+	}
 
 	int pprint(vector<Stmt>& block) {
 		log(4, "(trace) pprint");
