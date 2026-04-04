@@ -3,7 +3,7 @@ static class test;
 // int a = 12;
 
 int main() {
-	// print a;
+	print a;
 	// int a = 4;
 	// print a;
 	// test2();

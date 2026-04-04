@@ -55,10 +55,10 @@ struct Parser {
 	int pblock(vector<Stmt>& block) {
 		log(4, "(trace) pblock");
 		require("{");
-		// while (!tok.eof())
-		// 	if      (peek("}"))  break;
+		while (!tok.eof())
+			if      (peek("}"))  break;
 		// 	else if (passign(block)) ;
-		// 	else if (pprint(block)) ;
+			else if (pprint(block)) ;
 		// 	else if (pinput(block)) ;
 		// 	else if (pif(block)) ;
 		// 	else if (pwhile(block)) ;
@@ -69,6 +69,45 @@ struct Parser {
 		// 	else    { error("pblock", "unknown statement");  break; }
 		require("}");
 		return true;
+	}
+
+	// === Statements ===
+
+	int pprint(vector<Stmt>& block) {
+		log(4, "(trace) pprint");
+		if (!accept("print"))
+			return false;
+		// create object
+		auto& print = get<Print>( block.emplace_back(Print{}) );
+		// parse expressions
+		Expr expr;
+		if (pexpression(expr)) {
+			print.arguments.push_back(expr);
+			while (accept(",")) {
+				pexpression(expr, true);
+				print.arguments.push_back(expr);
+			}
+		}
+		// eol
+		require(";");
+		return true;
+	}
+
+	// === Expressions ===
+
+	int pexpression(Expr& expr, bool require=false) {
+		log(4, "(trace) prexpression");
+		// if      (pequals(expr))  return true;
+		if      (patom(expr))    return true;
+		else if (require)        return error("syntax-error", "expected expression");
+		else                     return false;
+	}
+
+	int patom(Expr& expr) {
+		log(4, "(trace) patom");
+		if (accept("$identifier"))
+			return expr = Variable{ presult.at(0) }, true;
+		return false;
 	}
 
 	// === Helpers ===
