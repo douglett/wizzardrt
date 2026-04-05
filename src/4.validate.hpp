@@ -68,13 +68,13 @@ struct Validate {
 
 	void vvariable(Variable& var) {
 		if (contains(locals, var.name))
-			log(4, "let local " + var.name),
+			log(4, "found variable " + var.name + " (local)"),
 			var.global = false;
 		else if (contains(statics, var.name))
-			log(4, "let static " + var.name),
+			log(4, "found variable " + var.name + " (static)"),
 			var.global = true;
 		else
-			error("vvariable", "missing variable: " + var.name);
+			error("vvariable", "undefined variable: " + var.name);
 	}
 
 	// === Helpers ===
