@@ -3,7 +3,7 @@
 
 // === Validate code structure & types ===
 struct Validate {
-	vector<string> statics, locals;
+	vector<string> classes, functions, statics, locals;
 	int loglevel = 4, errors = 0;
 
 	// validate everything
@@ -20,13 +20,22 @@ struct Validate {
 
 	void vclass(WizClass& cl) {
 		// duplicate name
-		// duplicate members
-		// duplicate functions
-
-		for (auto& dim : cl.members)
+		if (contains(classes, cl.name))
+			error("vclass", "duplicate class: " + cl.name);
+		classes.push_back(cl.name);
+		// define static members
+		for (auto& dim : cl.members) {
+			if (contains(statics, dim.name))
+				error("vclass", "duplicate static member: " + dim.name);
 			statics.push_back(dim.name);
-		for (auto& func : cl.functions)
+		}
+		// define functions
+		for (auto& func : cl.functions) {
+			if (contains(functions, func.name))
+				error("vclass", "duplicate function: " + func.name);
+			functions.push_back(func.name);
 			vfunction(func);
+		}
 	}
 
 	void vfunction(Func& func) {
