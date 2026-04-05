@@ -71,7 +71,6 @@ struct Parser {
 		if (!accept("$identifier $identifier"))
 			return false;
 		// create object
-		// auto& dim = get<Dim>( block.emplace_back(Dim{}) );
 		dim.type  = presult.at(0);
 		dim.name  = presult.at(1);
 		// assignment
@@ -90,13 +89,13 @@ struct Parser {
 			if      (peek("}"))  break;
 			else if (plet(block)) ;
 			else if (pprint(block)) ;
-		// 	else if (pinput(block)) ;
-		// 	else if (pif(block)) ;
-		// 	else if (pwhile(block)) ;
-		// 	else if (pbreak(block)) ;
-		// 	else if (preturn(block)) ;
+			// else if (pinput(block)) ;
+			// else if (pif(block)) ;
+			// else if (pwhile(block)) ;
+			// else if (pbreak(block)) ;
+			// else if (preturn(block)) ;
 			else if (pdimlocal(block)) ;
-		// 	else if (pexpressionline(block)) ;
+			// else if (pexpressionline(block)) ;
 			else    { error("pblock", "unknown statement");  break; }
 		require("}");
 		return true;

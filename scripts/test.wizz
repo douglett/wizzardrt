@@ -4,6 +4,7 @@ int a = 12;
 
 int main() {
 	print 1234;
+	print a;
 	
 	int a;
 	print a;
@@ -12,6 +13,8 @@ int main() {
 
 	int aa = 4;
 	print aa;
+
+	// gg = 10;
 	
 	// test2();
 	// print a;

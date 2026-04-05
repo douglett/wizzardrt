@@ -165,17 +165,22 @@ void doug2() {
 }
 
 void parsetest() {
+	int ok = 0;
 	Tokenizer tok;
-	tok.tokenize("scripts/test.wizz");
+	ok = tok.tokenize("scripts/test.wizz");
 	tok.show();
+	if (!ok) return;
 
 	Parser p(tok);
-	p.parse();
+	ok = p.parse();
 	Show().all();
-	Validate().all();
+	if (!ok) return;
+
+	ok = Validate().all();
+	if (!ok) return;
 
 	Runtime r;
-	r.call("test", "main");
+	ok = r.call("test", "main");
 }
 
 int main() {
